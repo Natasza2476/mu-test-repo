@@ -6,8 +6,11 @@ import { Books } from '../imports/books.js';
 
 Template.body.helpers({
   books() {
-    Books.insert({title: '0000', author: '0'});
-    var book1 = Books.findOne();
+
+    // Two lines below causes infinity loop
+    
+    /* Books.insert({title: '0000', author: '0'});
+    Books.findOne(); */
 
     return Books.find({});
   },
