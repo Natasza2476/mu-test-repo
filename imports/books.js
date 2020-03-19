@@ -88,3 +88,50 @@ I20200319-13:02:42.461(1)?     at runWithEnvironment (packages/meteor.js:1286:24
 
 // ---------------------------------------------------------------------------------------------
 
+// Books.insert({title: 'Just a title'});
+// Books.update({title: 'Just a title'}, {$set: {title: 'Updated title'}})
+
+/* Causes insert, update, then insert again. */
+/*
+I20200319-13:18:48.289(1)? on insert: { title: 'Just a title', _id: 'XLZNW8iyZZep6pssm' }
+I20200319-13:18:48.324(1)? on update { title: 'Just a title' }
+=> Meteor server restarted
+I20200319-13:18:52.342(1)? on insert: { title: 'Just a title', _id: 'oebCfLYhDJAxika2R' }
+*/
+
+/* Documents in collection Books are now:
+{
+  "_id" : "XLZNW8iyZZep6pssm",
+  "title" : "Updated title"
+}
+{
+  "_id" : "oebCfLYhDJAxika2R",
+  "title" : "Just a title"
+}
+*/
+
+// ---------------------------------------------------------------------------------------------
+
+// Books.upsert({title: 'Upserted when collection is empty'}, {$set: {title: 'Upserted when collection is empty'}});
+
+/* Called on empty collection, everything is OK */
+/*
+I20200319-13:49:23.103(1)? on update { title: 'Upserted when collection is empty' }
+=> Meteor server restarted
+*/
+
+// ---------------------------------------------------------------------------------------------
+
+// Books.insert({title: 'Some title'});
+// Books.upsert({title: 'Not in collection yet'}, {$set: {title: 'In collection now'}});
+
+/* Insert something, upsert nonexistent document. Insertion was made twice (not OK), upsert causes one update (OK) */
+/*
+I20200319-13:53:38.819(1)? on insert: { title: 'Some title', _id: '4SWbw2Cm3Df2bsWT9' }
+I20200319-13:53:38.827(1)? on update { title: 'Not in collection yet' }
+=> Meteor server restarted
+I20200319-13:53:42.353(1)? on insert: { title: 'Some title', _id: 'Y4fEsLJuGhnH5659h' }
+*/
+
+// ---------------------------------------------------------------------------------------------
+
